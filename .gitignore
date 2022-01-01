@@ -1,0 +1,8 @@
+*.ini
+*.mti
+*.mpf
+*.wlf
+*.do
+/work/
+/.vscode/
+transcript

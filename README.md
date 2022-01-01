@@ -11,3 +11,14 @@
 - ANDI
 - JAL
 - JALR
+- AUIPC
+
+## remain
+
+- シフトI
+- OP-inst
+- branch
+- load
+- store
+- system
+- fence

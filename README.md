@@ -10,3 +10,4 @@
 - ORI
 - ANDI
 - JAL
+- JALR

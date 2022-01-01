@@ -24,6 +24,7 @@ end Controller;
 -- | lui  | 0110111 |  XXX   |         1        |         00         |     X     |     X     |      0     |     XXX     |
 -- |op-imm| 0010011 |  aaa   |         1        |         01         |     0     |     0     |      0     |     aaa     |
 -- | jal  | 1101111 |  XXX   |         1        |         10         |     1     |     1     |      1     |     000     |
+-- | jalr | 1100111 |  XXX   |         1        |         10         |     0     |     0     |      1     |     000     |
 -- +------+---------+--------+------------------+--------------------+-----------+-----------+------------+-------------+
 
 architecture rtl of Controller is
@@ -34,6 +35,7 @@ begin
         "100XX0XXX" when opcode = "0110111" else  -- LUI
         "101000" & funct3 when opcode = "0010011" else  -- op-imm
         "110111000" when opcode = "1101111" else  -- JAL
+        "110001000" when opcode = "1100111" else  -- JALR
         "XXXXXXXXX";
 
     (reg_write_enable, reg_write_data_sel, src_a_sel, src_b_sel, pc_src_sel, alu_control) <= controls;

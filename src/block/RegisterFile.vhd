@@ -43,7 +43,6 @@ begin
         if addr_int /= 0 then
             read_data <= regfile(addr_int);
         else
-            report "all 0.";
             read_data <= (others => '0');
         end if;
     end process;

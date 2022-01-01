@@ -9,3 +9,4 @@
 - XORI
 - ORI
 - ANDI
+- JAL

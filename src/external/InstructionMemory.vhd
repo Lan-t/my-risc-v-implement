@@ -19,7 +19,9 @@ architecture rtl of InstructionMemory is
 begin
 
     inst <=
-        x"12345" & b"00001" & b"0110111" when addr = x"00000000" else  -- LUI $1, 0
+        x"12345" & b"00001" & b"0110111" when addr = x"00000000" else  -- LUI r1, 0x12345
+        x"678" & b"00001" & b"110" & b"00001" & b"0010011" when addr = x"00000004" else  -- ORI r1, r1, 0x678
+        x"678" & b"00000" & b"000" & b"00010" & b"0010011" when addr = x"00000008" else  -- ORI r2, r0, 0x678
         x"00000000";
 
 end architecture;

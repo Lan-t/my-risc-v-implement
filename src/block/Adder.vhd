@@ -20,4 +20,4 @@ begin
 
     result <= a + b;
 
-end architecture; -- rtl
+end architecture;

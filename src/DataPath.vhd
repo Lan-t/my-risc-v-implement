@@ -11,7 +11,7 @@ entity DataPath is
         pc: buffer std_logic_vector(XLEN-1 downto 0);
         inst: in std_logic_vector(31 downto 0);
         reg_write_enable: in std_logic;
-        reg_write_data_sel: in std_logic -- 0: u-imm(<<12)  1: alu result
+        reg_write_data_sel: in std_logic -- 0: u-imm  1: alu result
     );
 end DataPath;
 
@@ -88,12 +88,12 @@ architecture rtl of DataPath is
     signal opcode: std_logic_vector(6 downto 0);
     signal funct3: std_logic_vector(2 downto 0);
     signal rs1, rd: std_logic_vector(4 downto 0);
-    signal i_imm: std_logic_vector(11 downto 0);
-    signal u_imm: std_logic_vector(19 downto 0);
-    signal imm_sl12: std_logic_vector(XLEN-1 downto 0);
+    signal i_raw_imm: std_logic_vector(11 downto 0);
+    signal i_imm: std_logic_vector(XLEN-1 downto 0);
+    signal u_raw_imm: std_logic_vector(19 downto 0);
+    signal u_imm: std_logic_vector(XLEN-1 downto 0);
 
     signal src_a: std_logic_vector(XLEN-1 downto 0);
-    signal i_imm_sx: std_logic_vector(XLEN-1 downto 0);
     signal result: std_logic_vector(XLEN-1 downto 0);
     signal zero: std_logic;
 
@@ -106,10 +106,10 @@ begin
     funct3 <= inst(14 downto 12);
     rs1 <= inst(19 downto 15);
     rd <= inst(11 downto 7);
-    i_imm <= inst(31 downto 20);
-    u_imm <= inst(31 downto 12);
+    i_raw_imm <= inst(31 downto 20);
+    u_raw_imm <= inst(31 downto 12);
 
-    imm_sl: ShiftLeft12 port map (u_imm, imm_sl12);
+    make_u_imm: ShiftLeft12 port map (u_raw_imm, u_imm);
 
     -- PC
     pc_ff: FlipFlop port map (clock, reset, d => pc_plus4, q => pc);
@@ -128,13 +128,13 @@ begin
     main_alu: ALU port map (
         alu_control => funct3,
         a => src_a,
-        b => i_imm_sx,
+        b => i_imm,
         result => result,
         zero => zero
     );
-    imm_sx1: SignExtend port map (i_imm, i_imm_sx);
+    make_i_imm: SignExtend port map (i_raw_imm, i_imm);
 
     -- result
-    sel_write_data: Multiplexer2 port map (imm_sl12, result, selector => reg_write_data_sel, result => reg_write_data);
+    sel_write_data: Multiplexer2 port map (u_imm, result, selector => reg_write_data_sel, result => reg_write_data);
 
 end architecture;

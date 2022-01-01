@@ -18,7 +18,7 @@ architecture rtl of RV32I is
         port (
             opcode: in std_logic_vector(6 downto 0);
             reg_write_enable: out std_logic;
-            reg_write_data_sel: out std_logic -- 0: u-imm(<<12)  1: alu result
+            reg_write_data_sel: out std_logic -- 0: u-imm  1: alu result
         );
     end component;
     component DataPath is
@@ -27,7 +27,7 @@ architecture rtl of RV32I is
             pc: buffer std_logic_vector(XLEN-1 downto 0);
             inst: in std_logic_vector(31 downto 0);
             reg_write_enable: in std_logic;
-            reg_write_data_sel: in std_logic -- 0: u-imm(<<12)  1: alu result
+            reg_write_data_sel: in std_logic -- 0: u-imm  1: alu result
         );
     end component;
 

@@ -8,7 +8,7 @@ use work.RiskVGlobals.all;
 entity DataPath is
     port (
         clock, reset: in std_logic;
-        pc: buffer std_logic_vector(REGISTER_WIDTH-1 downto 0);
+        pc: buffer std_logic_vector(XLEN-1 downto 0);
         inst: in std_logic_vector(31 downto 0);
         reg_write_enable: in std_logic
     );
@@ -18,7 +18,7 @@ architecture rtl of DataPath is
 
     component FlipFlop is
         generic (
-            width: integer := REGISTER_WIDTH
+            width: integer := XLEN
         );
         port (
             clock, reset: in std_logic;
@@ -31,12 +31,12 @@ architecture rtl of DataPath is
             clock: in std_logic;
             write_enable: in std_logic;
             write_addr: in std_logic_vector(REG_SELECTOR_LEN-1 downto 0);
-            write_data: in std_logic_vector(REGISTER_WIDTH-1 downto 0)
+            write_data: in std_logic_vector(XLEN-1 downto 0)
         );
     end component;
     component Adder is
         generic (
-            width: integer := REGISTER_WIDTH
+            width: integer := XLEN
         );
         port (
             a, b: in std_logic_vector(width-1 downto 0);
@@ -50,11 +50,11 @@ architecture rtl of DataPath is
         );
     end component;
 
-    signal pc_plus4: std_logic_vector(REGISTER_WIDTH-1 downto 0);
+    signal pc_plus4: std_logic_vector(XLEN-1 downto 0);
     signal opcode: std_logic_vector(6 downto 0);
     signal rd: std_logic_vector(4 downto 0);
     signal u_imm: std_logic_vector(19 downto 0);
-    signal imm_sl12: std_logic_vector(REGISTER_WIDTH-1 downto 0);
+    signal imm_sl12: std_logic_vector(XLEN-1 downto 0);
 
 begin
 

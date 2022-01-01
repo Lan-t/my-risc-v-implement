@@ -7,7 +7,7 @@ use work.RiskVGlobals.all;
 
 entity InstructionMemory is
     port (
-        addr: in std_logic_vector(REGISTER_WIDTH-1 downto 0);
+        addr: in std_logic_vector(XLEN-1 downto 0);
         inst: out std_logic_vector(31 downto 0)
     );
 end InstructionMemory;
@@ -19,7 +19,7 @@ architecture rtl of InstructionMemory is
 begin
 
     inst <=
-        x"12345" & b"00000_0110111" when addr = x"00000000" else  -- LUI $0, 0
+        x"12345" & b"00001" & b"0110111" when addr = x"00000000" else  -- LUI $1, 0
         x"00000000";
 
 end architecture;

@@ -6,7 +6,7 @@ use work.RiskVGlobals.all;
 
 entity FlipFlop is
     generic (
-        width: integer := REGISTER_WIDTH
+        width: integer := XLEN
     );
     port (
         clock, reset: in std_logic;

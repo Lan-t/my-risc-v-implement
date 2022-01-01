@@ -7,7 +7,7 @@ use work.RiskVGlobals.all;
 
 entity Adder is
     generic (
-        width: integer := REGISTER_WIDTH
+        width: integer := XLEN
     );
     port (
         a, b: in std_logic_vector(width-1 downto 0);

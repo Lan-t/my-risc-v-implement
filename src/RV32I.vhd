@@ -7,7 +7,7 @@ use work.RiskVGlobals.all;
 entity RV32I is
     port (
         clock, reset: in std_logic;
-        pc: out std_logic_vector(REGISTER_WIDTH-1 downto 0);
+        pc: out std_logic_vector(XLEN-1 downto 0);
         inst: in std_logic_vector(31 downto 0)
     );
 end RV32I;
@@ -23,7 +23,7 @@ architecture rtl of RV32I is
     component DataPath is
         port (
             clock, reset: in std_logic;
-            pc: buffer std_logic_vector(REGISTER_WIDTH-1 downto 0);
+            pc: buffer std_logic_vector(XLEN-1 downto 0);
             inst: in std_logic_vector(31 downto 0);
             reg_write_enable: in std_logic
         );

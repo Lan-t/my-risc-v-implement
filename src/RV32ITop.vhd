@@ -15,18 +15,18 @@ architecture rtl of RV32ITop is
     component RV32I is
         port (
             clock, reset: in std_logic;
-            pc: out std_logic_vector(REGISTER_WIDTH-1 downto 0);
+            pc: out std_logic_vector(XLEN-1 downto 0);
             inst: in std_logic_vector(31 downto 0)
         );
     end component;
     component InstructionMemory is
         port (
-            addr: in std_logic_vector(REGISTER_WIDTH-1 downto 0);
+            addr: in std_logic_vector(XLEN-1 downto 0);
             inst: out std_logic_vector(31 downto 0)
         );
     end component;
 
-    signal pc: std_logic_vector(REGISTER_WIDTH-1 downto 0);
+    signal pc: std_logic_vector(XLEN-1 downto 0);
     signal inst: std_logic_vector(31 downto 0);
 
 begin

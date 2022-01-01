@@ -13,7 +13,7 @@ entity DataPath is
         reg_write_enable: in std_logic;
         reg_write_data_sel: in std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
         src_a_sel: in std_logic; -- 0: reg_read_data  1: pc
-        src_b_sel: in std_logic; -- 0: i_imm  1: j_imm
+        src_b_sel: in std_logic_vector(1 downto 0); -- 00: i_imm  01: j_imm  10: u_imm
         pc_src_sel: in std_logic;  -- 0: pc_plus4  1: result
         alu_control: in std_logic_vector(2 downto 0)
     );
@@ -160,7 +160,7 @@ begin
         zero => zero
     );
     sel_src_a: Multiplexer2 port map (reg_read_data, pc, selector => src_a_sel, result => src_a);
-    sel_src_b: Multiplexer2 port map (i_imm, j_imm, selector => src_b_sel, result => src_b);
+    sel_src_b: Multiplexer4 port map (i_imm, j_imm, u_imm, x"XXXXXXXX", selector => src_b_sel, result => src_b);
 
     -- result
     sel_write_data: Multiplexer4 port map (u_imm, result, pc_plus4, x"XXXXXXXX", selector => reg_write_data_sel, result => reg_write_data);

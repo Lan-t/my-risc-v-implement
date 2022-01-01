@@ -21,7 +21,7 @@ architecture rtl of RV32I is
             reg_write_enable: out std_logic;
             reg_write_data_sel: out std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
             src_a_sel: out std_logic; -- 0: reg_read_data  1: pc
-            src_b_sel: out std_logic; -- 0: i_imm  1: j_imm
+            src_b_sel: out std_logic_vector(1 downto 0); -- 00: i_imm  01: j_imm  10: u_imm
             pc_src_sel: out std_logic;  -- 0: pc_plus4  1: result
             alu_control: out std_logic_vector(2 downto 0)
         );
@@ -34,7 +34,7 @@ architecture rtl of RV32I is
             reg_write_enable: in std_logic;
             reg_write_data_sel: in std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
             src_a_sel: in std_logic; -- 0: reg_read_data  1: pc
-            src_b_sel: in std_logic; -- 0: i_imm  1: j_imm
+            src_b_sel: in std_logic_vector(1 downto 0); -- 00: i_imm  01: j_imm  10: u_imm
             pc_src_sel: in std_logic;  -- 0: pc_plus4  1: result
             alu_control: in std_logic_vector(2 downto 0)
         );
@@ -43,7 +43,7 @@ architecture rtl of RV32I is
     signal reg_write_enable: std_logic;
     signal reg_write_data_sel: std_logic_vector(1 downto 0);
     signal src_a_sel: std_logic;
-    signal src_b_sel: std_logic;
+    signal src_b_sel: std_logic_vector(1 downto 0);
     signal pc_src_sel: std_logic;
 
     signal alu_control: std_logic_vector(2 downto 0);

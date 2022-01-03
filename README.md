@@ -24,13 +24,16 @@
 
 - BEQ
 
+- LW
+- SW
+
 ## remain
 
 - シフトI
 - シフト
 - SUB
-- branch
-- load
-- store
+- branch (BEQ以外)
+- load (word以外)
+- store (word以外)
 - system
 - fence

@@ -13,8 +13,10 @@ entity DataPath is
         reg_write_enable: in std_logic;
         reg_write_data_sel: in std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
         src_a_sel: in std_logic; -- 0: reg_read_data1  1: pc
-        src_b_sel: in std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  100: reg_read_data2
+        src_b_sel: in std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  011: s_imm  100: reg_read_data2
         pc_sel_signal: in std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if zero
+        mem_write_enable: in std_logic;
+        result_sel: in std_logic; -- 0: alu_result  1: mem_read_data
         alu_control: in std_logic_vector(2 downto 0)
     );
 end DataPath;
@@ -50,6 +52,15 @@ architecture rtl of DataPath is
             write_data: in std_logic_vector(XLEN-1 downto 0)
         );
     end component;
+    component DataMemory is
+        port (
+            clock: in std_logic;
+            addr: in std_logic_vector(31 downto 0);
+            write_enable: in std_logic;
+            write_data: in std_logic_vector(31 downto 0);
+            read_data: out std_logic_vector(31 downto 0)
+        );
+    end component;
     component ALU is
         generic (
             width: integer := XLEN
@@ -79,6 +90,12 @@ architecture rtl of DataPath is
     component BuildJImm is
         port (
             j_raw_imm: in std_logic_vector(19 downto 0);
+            result: out std_logic_vector(XLEN-1 downto 0)
+        );
+    end component;
+    component BuildSImm is
+        port (
+            s_raw_imm: in std_logic_vector(24 downto 0);
             result: out std_logic_vector(XLEN-1 downto 0)
         );
     end component;
@@ -143,15 +160,19 @@ architecture rtl of DataPath is
     signal u_imm: std_logic_vector(XLEN-1 downto 0);
     signal j_raw_imm: std_logic_vector(19 downto 0);
     signal j_imm: std_logic_vector(XLEN-1 downto 0);
+    signal s_raw_imm: std_logic_vector(24 downto 0);
+    signal s_imm: std_logic_vector(XLEN-1 downto 0);
 
     signal src_a: std_logic_vector(XLEN-1 downto 0);
     signal src_b: std_logic_vector(XLEN-1 downto 0);
+    signal alu_result: std_logic_vector(XLEN-1 downto 0);
     signal result: std_logic_vector(XLEN-1 downto 0);
     signal zero: std_logic;
 
     signal reg_read_data1: std_logic_vector(XLEN-1 downto 0);
     signal reg_read_data2: std_logic_vector(XLEN-1 downto 0);
     signal reg_write_data: std_logic_vector(XLEN-1 downto 0);
+    signal mem_read_data: std_logic_vector(XLEN-1 downto 0);
 
 begin
 
@@ -164,11 +185,13 @@ begin
     b_raw_imm <= inst(31 downto 7);
     u_raw_imm <= inst(31 downto 12);
     j_raw_imm <= inst(31 downto 12);
+    s_raw_imm <= inst(31 downto 7);
 
     make_i_imm: SignExtend port map (i_raw_imm, i_imm);
     make_b_imm: BuildBImm port map (b_raw_imm, b_imm);
     make_u_imm: ShiftLeft12 port map (u_raw_imm, u_imm);
     make_j_imm: BuildJImm port map (j_raw_imm, j_imm);
+    make_s_imm: BuildSImm port map (s_raw_imm, s_imm);
 
     -- PC
     pc_ff: FlipFlop port map (clock, reset, d => pc_src, q => pc);
@@ -193,22 +216,39 @@ begin
         write_data => reg_write_data
     );
 
+    -- port (
+    --     clock: in std_logic;
+    --     addr: in std_logic_vector(31 downto 0);
+    --     write_enable: in std_logic;
+    --     write_data: in std_logic_vector(31 downto 0);
+    --     read_data: out std_logic_vector(31 downto 0)
+    -- );
+    -- Data Memory
+    dm: DataMemory port map (clock,
+        addr => alu_result,
+        write_enable => mem_write_enable,
+        write_data => reg_read_data2,
+        read_data => mem_read_data
+    );
+
     -- ALU
     main_alu: ALU port map (
         alu_control => alu_control,
         a => src_a,
         b => src_b,
-        result => result,
+        result => alu_result,
         zero => zero
     );
     sel_src_a: Multiplexer2 port map (reg_read_data1, pc, selector => src_a_sel, result => src_a);
     sel_src_b: Multiplexer8 port map (
-        i_imm, j_imm, u_imm, x"XXXXXXXX",
+        i_imm, j_imm, u_imm, s_imm,
         reg_read_data2, x"XXXXXXXX", x"XXXXXXXX", x"XXXXXXXX",
         selector => src_b_sel, result => src_b
     );
 
     -- result
     sel_write_data: Multiplexer4 port map (u_imm, result, pc_plus4, x"XXXXXXXX", selector => reg_write_data_sel, result => reg_write_data);
+
+    sel_result: Multiplexer2 port map (alu_result, mem_read_data, selector => result_sel, result => result);
 
 end architecture;

@@ -21,8 +21,10 @@ architecture rtl of RV32I is
             reg_write_enable: out std_logic;
             reg_write_data_sel: out std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
             src_a_sel: out std_logic; -- 0: reg_read_data1  1: pc
-            src_b_sel: out std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  100: reg_read_data2
+            src_b_sel: out std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  011: s_imm  100: reg_read_data2
             pc_sel_signal: out std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if zero
+            mem_write_enable: out std_logic;
+            result_sel: out std_logic; -- 0: alu_result  1: mem_read_data
             alu_control: out std_logic_vector(2 downto 0)
         );
     end component;
@@ -34,8 +36,10 @@ architecture rtl of RV32I is
             reg_write_enable: in std_logic;
             reg_write_data_sel: in std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
             src_a_sel: in std_logic; -- 0: reg_read_data1  1: pc
-            src_b_sel: in std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  100: reg_read_data2
+            src_b_sel: in std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  011: s_imm  100: reg_read_data2
             pc_sel_signal: in std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if zero
+            mem_write_enable: in std_logic;
+            result_sel: in std_logic; -- 0: alu_result  1: mem_read_data
             alu_control: in std_logic_vector(2 downto 0)
         );
     end component;
@@ -45,7 +49,8 @@ architecture rtl of RV32I is
     signal src_a_sel: std_logic;
     signal src_b_sel: std_logic_vector(2 downto 0);
     signal pc_sel_signal: std_logic_vector(1 downto 0);
-
+    signal mem_write_enable: std_logic;
+    signal result_sel: std_logic;
     signal alu_control: std_logic_vector(2 downto 0);
 
     signal opcode: std_logic_vector(6 downto 0);
@@ -64,6 +69,8 @@ begin
         src_a_sel => src_a_sel,
         src_b_sel => src_b_sel,
         pc_sel_signal => pc_sel_signal,
+        mem_write_enable => mem_write_enable,
+        result_sel => result_sel,
         alu_control => alu_control
     );
     dp: DataPath port map (clock, reset,
@@ -74,6 +81,8 @@ begin
         src_a_sel => src_a_sel,
         src_b_sel => src_b_sel,
         pc_sel_signal => pc_sel_signal,
+        mem_write_enable => mem_write_enable,
+        result_sel => result_sel,
         alu_control => alu_control
     );
 

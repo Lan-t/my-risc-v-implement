@@ -18,7 +18,7 @@ end RegisterFile;
 
 architecture rtl of RegisterFile is
 
-    type RegisterFileType is array (31 downto 1)
+    type RegisterFileType is array (1 to 31)
         of std_logic_vector(XLEN-1 downto 0);
 
     signal regfile: RegisterFileType;
@@ -32,7 +32,7 @@ begin
         if rising_edge(clock) and write_enable = '1' then
             addr_int := to_integer(unsigned(write_addr));
             if addr_int /= 0 then
-                regfile(to_integer(unsigned(write_addr))) <= write_data;
+                regfile(addr_int) <= write_data;
             end if;
         end if;
     end process;

@@ -70,12 +70,9 @@ begin
     process (result)
         variable a: std_logic := '0';
     begin
-        report "result(0): " & std_logic'image(result(0));
-        report "a: " & std_logic'image(a);
         a := '0';
         for i in 0 to width-1 loop
             a := a or result(i);
-            report std_logic'image(a);
         end loop;
         zero <= not a;
     end process;

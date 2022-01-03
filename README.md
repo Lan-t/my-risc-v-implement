@@ -3,20 +3,32 @@
 ## implemented instruction
 
 - LUI
+
 - ADDI
 - SLTI
 - SLTIU
 - XORI
 - ORI
 - ANDI
+
 - JAL
 - JALR
 - AUIPC
 
+- ADD
+- SLT
+- SLTU
+- XOR
+- OR
+- AND
+
+- BEQ
+
 ## remain
 
 - シフトI
-- OP-inst
+- シフト
+- SUB
 - branch
 - load
 - store

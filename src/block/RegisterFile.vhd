@@ -8,8 +8,8 @@ use work.RiscVGlobals.all;
 entity RegisterFile is
     port (
         clock: in std_logic;
-        read_addr: in std_logic_vector(REG_SELECTOR_LEN-1 downto 0);
-        read_data: out std_logic_vector(XLEN-1 downto 0);
+        read_addr1, read_addr2: in std_logic_vector(REG_SELECTOR_LEN-1 downto 0);
+        read_data1, read_data2: out std_logic_vector(XLEN-1 downto 0);
         write_enable: in std_logic;
         write_addr: in std_logic_vector(REG_SELECTOR_LEN-1 downto 0);
         write_data: in std_logic_vector(XLEN-1 downto 0)
@@ -25,6 +25,7 @@ architecture rtl of RegisterFile is
 
 begin
 
+    -- write
     process (clock)
         variable addr_int: integer := 0;
     begin
@@ -36,14 +37,27 @@ begin
         end if;
     end process;
 
+    -- read 1
     process (all)
         variable addr_int: integer := 0;
     begin
-        addr_int := to_integer(unsigned(read_addr));
+        addr_int := to_integer(unsigned(read_addr1));
         if addr_int /= 0 then
-            read_data <= regfile(addr_int);
+            read_data1 <= regfile(addr_int);
         else
-            read_data <= (others => '0');
+            read_data1 <= (others => '0');
+        end if;
+    end process;
+
+    -- read 2
+    process (all)
+        variable addr_int: integer := 0;
+    begin
+        addr_int := to_integer(unsigned(read_addr2));
+        if addr_int /= 0 then
+            read_data2 <= regfile(addr_int);
+        else
+            read_data2 <= (others => '0');
         end if;
     end process;
 

@@ -10,12 +10,14 @@ entity DataPath is
         clock, reset: in std_logic;
         pc: buffer std_logic_vector(XLEN-1 downto 0);
         inst: in std_logic_vector(31 downto 0);
+        mem_addr: out std_logic_vector(31 downto 0);
+        mem_write_data: out std_logic_vector(31 downto 0);
+        mem_read_data: in std_logic_vector(31 downto 0);
         reg_write_enable: in std_logic;
         reg_write_data_sel: in std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
         src_a_sel: in std_logic; -- 0: reg_read_data1  1: pc
         src_b_sel: in std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  011: s_imm  100: reg_read_data2
         pc_sel_signal: in std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if zero
-        mem_write_enable: in std_logic;
         result_sel: in std_logic; -- 0: alu_result  1: mem_read_data
         alu_control: in std_logic_vector(2 downto 0)
     );
@@ -50,15 +52,6 @@ architecture rtl of DataPath is
             write_enable: in std_logic;
             write_addr: in std_logic_vector(REG_SELECTOR_LEN-1 downto 0);
             write_data: in std_logic_vector(XLEN-1 downto 0)
-        );
-    end component;
-    component DataMemory is
-        port (
-            clock: in std_logic;
-            addr: in std_logic_vector(31 downto 0);
-            write_enable: in std_logic;
-            write_data: in std_logic_vector(31 downto 0);
-            read_data: out std_logic_vector(31 downto 0)
         );
     end component;
     component ALU is
@@ -172,7 +165,6 @@ architecture rtl of DataPath is
     signal reg_read_data1: std_logic_vector(XLEN-1 downto 0);
     signal reg_read_data2: std_logic_vector(XLEN-1 downto 0);
     signal reg_write_data: std_logic_vector(XLEN-1 downto 0);
-    signal mem_read_data: std_logic_vector(XLEN-1 downto 0);
 
 begin
 
@@ -192,6 +184,11 @@ begin
     make_u_imm: ShiftLeft12 port map (u_raw_imm, u_imm);
     make_j_imm: BuildJImm port map (j_raw_imm, j_imm);
     make_s_imm: BuildSImm port map (s_raw_imm, s_imm);
+
+    -- memory
+
+    mem_addr <= alu_result;
+    mem_write_data <= reg_read_data2;
 
     -- PC
     pc_ff: FlipFlop port map (clock, reset, d => pc_src, q => pc);
@@ -214,21 +211,6 @@ begin
         write_enable => reg_write_enable,
         write_addr => rd,
         write_data => reg_write_data
-    );
-
-    -- port (
-    --     clock: in std_logic;
-    --     addr: in std_logic_vector(31 downto 0);
-    --     write_enable: in std_logic;
-    --     write_data: in std_logic_vector(31 downto 0);
-    --     read_data: out std_logic_vector(31 downto 0)
-    -- );
-    -- Data Memory
-    dm: DataMemory port map (clock,
-        addr => alu_result,
-        write_enable => mem_write_enable,
-        write_data => reg_read_data2,
-        read_data => mem_read_data
     );
 
     -- ALU

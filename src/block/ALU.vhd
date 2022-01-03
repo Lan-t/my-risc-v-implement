@@ -4,7 +4,7 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
 library work;
-use work.RiskVGlobals.all;
+use work.RiscVGlobals.all;
 
 entity ALU is
     generic (

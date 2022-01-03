@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 library work;
-use work.RiskVGlobals.all;
+use work.RiscVGlobals.all;
 
 entity ShiftLeft12 is
     port (

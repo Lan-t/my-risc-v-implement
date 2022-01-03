@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 
 library work;
-use work.RiskVGlobals.all;
+use work.RiscVGlobals.all;
 
 entity Adder is
     generic (

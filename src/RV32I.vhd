@@ -22,6 +22,7 @@ architecture rtl of RV32I is
         port (
             opcode: in std_logic_vector(6 downto 0);
             funct3: in std_logic_vector(2 downto 0);
+            funct7: in std_logic_vector(6 downto 0);
             reg_write_enable: out std_logic;
             reg_write_data_sel: out std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
             src_a_sel: out std_logic; -- 0: reg_read_data1  1: pc
@@ -29,7 +30,7 @@ architecture rtl of RV32I is
             pc_sel_signal: out std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if zero
             mem_write_enable: out std_logic;
             result_sel: out std_logic; -- 0: alu_result  1: mem_read_data
-            alu_control: out std_logic_vector(2 downto 0)
+            alu_control: out std_logic_vector(3 downto 0)
         );
     end component;
     component DataPath is
@@ -46,7 +47,7 @@ architecture rtl of RV32I is
             src_b_sel: in std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  011: s_imm  100: reg_read_data2
             pc_sel_signal: in std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if zero
             result_sel: in std_logic; -- 0: alu_result  1: mem_read_data
-            alu_control: in std_logic_vector(2 downto 0)
+            alu_control: in std_logic_vector(3 downto 0)
         );
     end component;
 
@@ -56,19 +57,22 @@ architecture rtl of RV32I is
     signal src_b_sel: std_logic_vector(2 downto 0);
     signal pc_sel_signal: std_logic_vector(1 downto 0);
     signal result_sel: std_logic;
-    signal alu_control: std_logic_vector(2 downto 0);
+    signal alu_control: std_logic_vector(3 downto 0);
 
     signal opcode: std_logic_vector(6 downto 0);
     signal funct3: std_logic_vector(2 downto 0);
+    signal funct7: std_logic_vector(6 downto 0);
 
 begin
 
     opcode <= inst(6 downto 0);
     funct3 <= inst(14 downto 12);
+    funct7 <= inst(31 downto 25);
 
     con: Controller port map (
         opcode => opcode,
         funct3 => funct3,
+        funct7 => funct7,
         reg_write_enable => reg_write_enable,
         reg_write_data_sel => reg_write_data_sel,
         src_a_sel => src_a_sel,

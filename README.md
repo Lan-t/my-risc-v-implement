@@ -10,17 +10,24 @@
 - XORI
 - ORI
 - ANDI
+- SLLI
+- SRLI
+- SRAI
 
 - JAL
 - JALR
 - AUIPC
 
 - ADD
+- SUB
 - SLT
 - SLTU
 - XOR
 - OR
 - AND
+- SLL
+- SRL
+- SRA
 
 - BEQ
 
@@ -29,9 +36,6 @@
 
 ## remain
 
-- シフトI
-- シフト
-- SUB
 - branch (BEQ以外)
 - load (word以外)
 - store (word以外)
@@ -44,5 +48,6 @@
 ``` sh
 $ cd test_programs
 $ ./maketestfile test.c test
-$ mv test.txt ../src/external/InstructionRom.txt
+$ mv test.txt ../src/external/mem_file/InstructionRom.txt
+$ cd ..
 ```

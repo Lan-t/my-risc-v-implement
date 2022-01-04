@@ -2,7 +2,7 @@
 *.mti
 *.mpf
 *.wlf
-*.do
+vsim.do
 /work/
 /.vscode/
 transcript

@@ -19,7 +19,7 @@ entity DataPath is
         src_b_sel: in std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  011: s_imm  100: reg_read_data2
         pc_sel_signal: in std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if zero
         result_sel: in std_logic; -- 0: alu_result  1: mem_read_data
-        alu_control: in std_logic_vector(2 downto 0)
+        alu_control: in std_logic_vector(3 downto 0)
     );
 end DataPath;
 
@@ -59,7 +59,7 @@ architecture rtl of DataPath is
             width: integer := XLEN
         );
         port (
-            alu_control: in std_logic_vector(2 downto 0);
+            alu_control: in std_logic_vector(3 downto 0);
             a, b: in std_logic_vector(width-1 downto 0);
             result: buffer std_logic_vector(width-1 downto 0);
             zero: out std_logic

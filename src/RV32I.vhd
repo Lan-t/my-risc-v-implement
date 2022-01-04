@@ -27,7 +27,8 @@ architecture rtl of RV32I is
             reg_write_data_sel: out std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
             src_a_sel: out std_logic; -- 0: reg_read_data1  1: pc
             src_b_sel: out std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  011: s_imm  100: reg_read_data2
-            pc_sel_signal: out std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if zero
+            pc_sel_signal: out std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if true
+            branch_cond_sel: out std_logic_vector(1 downto 0);  -- 00: zero  01: not zero  10: result(0)  11: not result(0)
             mem_write_enable: out std_logic;
             result_sel: out std_logic; -- 0: alu_result  1: mem_read_data
             alu_control: out std_logic_vector(3 downto 0)
@@ -45,7 +46,8 @@ architecture rtl of RV32I is
             reg_write_data_sel: in std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
             src_a_sel: in std_logic; -- 0: reg_read_data1  1: pc
             src_b_sel: in std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  011: s_imm  100: reg_read_data2
-            pc_sel_signal: in std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if zero
+            pc_sel_signal: in std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if true
+            branch_cond_sel: in std_logic_vector(1 downto 0);  -- 00: zero  01: not zero  10: result(0)  11: not result(0)
             result_sel: in std_logic; -- 0: alu_result  1: mem_read_data
             alu_control: in std_logic_vector(3 downto 0)
         );
@@ -56,6 +58,7 @@ architecture rtl of RV32I is
     signal src_a_sel: std_logic;
     signal src_b_sel: std_logic_vector(2 downto 0);
     signal pc_sel_signal: std_logic_vector(1 downto 0);
+    signal branch_cond_sel: std_logic_vector(1 downto 0);
     signal result_sel: std_logic;
     signal alu_control: std_logic_vector(3 downto 0);
 
@@ -78,6 +81,7 @@ begin
         src_a_sel => src_a_sel,
         src_b_sel => src_b_sel,
         pc_sel_signal => pc_sel_signal,
+        branch_cond_sel => branch_cond_sel,
         mem_write_enable => mem_write_enable,
         result_sel => result_sel,
         alu_control => alu_control
@@ -93,6 +97,7 @@ begin
         src_a_sel => src_a_sel,
         src_b_sel => src_b_sel,
         pc_sel_signal => pc_sel_signal,
+        branch_cond_sel => branch_cond_sel,
         result_sel => result_sel,
         alu_control => alu_control
     );

@@ -8,7 +8,7 @@ void _start() {
 
     a[0] = 0;
 
-    for (int i = 1; ; i ++) {
+    for (int i = 1; i < 11; i ++) {
         a[i] = a[i-1] + i;
     }
 

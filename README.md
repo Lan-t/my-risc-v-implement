@@ -30,13 +30,15 @@
 - SRA
 
 - BEQ
+- BNE
+- BLT
+- BGE
 
 - LW
 - SW
 
 ## remain
 
-- branch (BEQ以外)
 - load (word以外)
 - store (word以外)
 - system

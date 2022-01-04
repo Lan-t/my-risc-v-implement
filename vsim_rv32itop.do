@@ -51,7 +51,7 @@ add wave -group register_write_group  \
     -label u_imm DUT/rv/dp/u_imm  \
     -label result DUT/rv/dp/result  \
     -label pc_plus4 DUT/rv/dp/pc_plus4
-add wave label register_file DUT/rv/dp/rf/regfile
+add wave -label register_file DUT/rv/dp/rf/regfile
 
 add wave -height 20 -divider ALU
 

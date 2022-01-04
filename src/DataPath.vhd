@@ -17,7 +17,8 @@ entity DataPath is
         reg_write_data_sel: in std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
         src_a_sel: in std_logic; -- 0: reg_read_data1  1: pc
         src_b_sel: in std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  011: s_imm  100: reg_read_data2
-        pc_sel_signal: in std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if zero
+        pc_sel_signal: in std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if true
+        branch_cond_sel: in std_logic_vector(1 downto 0);  -- 00: zero  01: not zero  10: result(0)  11: not result(0)
         result_sel: in std_logic; -- 0: alu_result  1: mem_read_data
         alu_control: in std_logic_vector(3 downto 0)
     );
@@ -29,7 +30,9 @@ architecture rtl of DataPath is
     component SubController is
         port (
             pc_sel_signal: in std_logic_vector(1 downto 0);
+            branch_cond_sel: in std_logic_vector(1 downto 0);
             alu_zero: in std_logic;
+            alu_result0: in std_logic;
             pc_src_sel: out std_logic_vector(1 downto 0)
         );
     end component;
@@ -198,7 +201,9 @@ begin
 
     subcon: SubController port map (
         pc_sel_signal => pc_sel_signal,
+        branch_cond_sel => branch_cond_sel,
         alu_zero => zero,
+        alu_result0 => alu_result(0),
         pc_src_sel => pc_src_sel
     );
 

@@ -12,7 +12,7 @@ initial begin
     int i;
     ram_file = $fopen("src/external/mem_file/DataRam.txt", "w+");
     $fdisplay(ram_file, "             3  2  1  0");
-    for (i = 0; i < 'h1000; i ++) begin
+    for (i = 0; i < 'h1000; i += 4) begin
         $fwrite(ram_file, "0x%8h: ", i);
         $fwrite(ram_file, "%2h ", 8'h00);
         $fwrite(ram_file, "%2h ", 8'h00);

@@ -46,7 +46,7 @@ architecture rtl of DataPath is
     end component;
     component RegisterFile is
         port (
-            clock: in std_logic;
+            clock, reset: in std_logic;
             read_addr1, read_addr2: in std_logic_vector(REG_SELECTOR_LEN-1 downto 0);
             read_data1, read_data2: out std_logic_vector(XLEN-1 downto 0);
             write_enable: in std_logic;
@@ -203,7 +203,7 @@ begin
     );
 
     -- Register
-    rf: RegisterFile port map (clock,
+    rf: RegisterFile port map (clock, reset,
         read_addr1 => rs1,
         read_data1 => reg_read_data1,
         read_addr2 => rs2,

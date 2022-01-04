@@ -31,7 +31,7 @@ begin
     begin
         addr_int := to_integer(signed(addr));
         addr_d4 := addr_int / 4;
-        file_open(rom_file, "src/external/InstructionRom.txt", READ_MODE);
+        file_open(rom_file, "src/external/mem_file/InstructionRom.txt", READ_MODE);
         for i in 0 to addr_d4 loop
             if endfile(rom_file) then
                 readline_good := false;

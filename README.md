@@ -37,3 +37,12 @@
 - store (word以外)
 - system
 - fence
+
+
+## make instruction rom
+
+``` sh
+$ cd test_programs
+$ ./maketestfile test.c test
+$ mv test.txt ../src/external/InstructionRom.txt
+```

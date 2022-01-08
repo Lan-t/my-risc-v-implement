@@ -10,9 +10,9 @@ entity RV32I is
         pc: out std_logic_vector(XLEN-1 downto 0);
         inst: in std_logic_vector(31 downto 0);
         mem_addr: out std_logic_vector(31 downto 0);
-        mem_write_enable: out std_logic;
-        mem_write_data: out std_logic_vector(31 downto 0);
-        mem_read_data: in std_logic_vector(31 downto 0)
+        mem_w_en: out std_logic;
+        mem_w_data: out std_logic_vector(31 downto 0);
+        mem_r_data: in std_logic_vector(31 downto 0)
     );
 end RV32I;
 
@@ -23,44 +23,46 @@ architecture rtl of RV32I is
             opcode: in std_logic_vector(6 downto 0);
             funct3: in std_logic_vector(2 downto 0);
             funct7: in std_logic_vector(6 downto 0);
-            reg_write_enable: out std_logic;
-            reg_write_data_sel: out std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
+            alu_zero, alu_result_0: in std_logic;
             src_a_sel: out std_logic; -- 0: reg_read_data1  1: pc
-            src_b_sel: out std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  011: s_imm  100: reg_read_data2
-            pc_sel_signal: out std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if true
-            branch_cond_sel: out std_logic_vector(1 downto 0);  -- 00: zero  01: not zero  10: result(0)  11: not result(0)
-            mem_write_enable: out std_logic;
+            src_b_sel: out std_logic_vector(2 downto 0); -- 000: i_imm  001: s_imm  010: u_imm  011: j_imm  100: reg_read_data2
+            alu_con: out std_logic_vector(3 downto 0);
             result_sel: out std_logic; -- 0: alu_result  1: mem_read_data
-            alu_control: out std_logic_vector(3 downto 0)
+            reg_w_en: out std_logic;
+            reg_w_sel: out std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
+            mem_w_en: out std_logic;
+            pc_sel: out std_logic_vector(1 downto 0)  -- 00: pc_plus4  01: result  10: branch
         );
     end component;
     component DataPath is
         port (
             clock, reset: in std_logic;
-            pc: buffer std_logic_vector(XLEN-1 downto 0);
-            inst: in std_logic_vector(31 downto 0);
-            mem_addr: out std_logic_vector(31 downto 0);
-            mem_write_data: out std_logic_vector(31 downto 0);
-            mem_read_data: in std_logic_vector(31 downto 0);
-            reg_write_enable: in std_logic;
-            reg_write_data_sel: in std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
-            src_a_sel: in std_logic; -- 0: reg_read_data1  1: pc
-            src_b_sel: in std_logic_vector(2 downto 0); -- 000: i_imm  001: j_imm  010: u_imm  011: s_imm  100: reg_read_data2
-            pc_sel_signal: in std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch if true
-            branch_cond_sel: in std_logic_vector(1 downto 0);  -- 00: zero  01: not zero  10: result(0)  11: not result(0)
+            pc: out std_logic_vector(XLEN-1 downto 0);
+            inst: in std_logic_vector(XLEN-1 downto 0);
+            src_a_sel: in std_logic;  -- 0: reg_read_data1  1: pc
+            src_b_sel: in std_logic_vector(2 downto 0); -- 000: i_imm  001: s_imm  010: u_imm  011: j_imm  100: reg_read_data2
+            alu_con: in std_logic_vector(3 downto 0);
             result_sel: in std_logic; -- 0: alu_result  1: mem_read_data
-            alu_control: in std_logic_vector(3 downto 0)
+            reg_w_en: in std_logic;
+            reg_w_sel: in std_logic_vector(1 downto 0); -- 00: u-imm  01: alu result  10: pc_plus4
+            pc_sel: in std_logic_vector(1 downto 0);  -- 00: pc_plus4  01: result  10: branch
+            mem_r_data: in std_logic_vector(XLEN-1 downto 0);
+
+            alu_zero, alu_result_0: out std_logic;
+            mem_addr: out std_logic_vector(XLEN-1 downto 0);
+            mem_w_data: out std_logic_vector(XLEN-1 downto 0)
         );
     end component;
 
-    signal reg_write_enable: std_logic;
-    signal reg_write_data_sel: std_logic_vector(1 downto 0);
+    signal reg_w_en: std_logic;
+    signal reg_w_sel: std_logic_vector(1 downto 0);
     signal src_a_sel: std_logic;
     signal src_b_sel: std_logic_vector(2 downto 0);
-    signal pc_sel_signal: std_logic_vector(1 downto 0);
-    signal branch_cond_sel: std_logic_vector(1 downto 0);
+    signal pc_sel: std_logic_vector(1 downto 0);
     signal result_sel: std_logic;
-    signal alu_control: std_logic_vector(3 downto 0);
+    signal alu_con: std_logic_vector(3 downto 0);
+
+    signal alu_zero, alu_result_0: std_logic;
 
     signal opcode: std_logic_vector(6 downto 0);
     signal funct3: std_logic_vector(2 downto 0);
@@ -76,30 +78,35 @@ begin
         opcode => opcode,
         funct3 => funct3,
         funct7 => funct7,
-        reg_write_enable => reg_write_enable,
-        reg_write_data_sel => reg_write_data_sel,
+        alu_zero => alu_zero,
+        alu_result_0 => alu_result_0,
+
         src_a_sel => src_a_sel,
         src_b_sel => src_b_sel,
-        pc_sel_signal => pc_sel_signal,
-        branch_cond_sel => branch_cond_sel,
-        mem_write_enable => mem_write_enable,
+        alu_con => alu_con,
         result_sel => result_sel,
-        alu_control => alu_control
+        reg_w_en => reg_w_en,
+        reg_w_sel => reg_w_sel,
+        mem_w_en => mem_w_en,
+        pc_sel => pc_sel
     );
     dp: DataPath port map (clock, reset,
         pc => pc,
         inst => inst,
-        mem_addr => mem_addr,
-        mem_write_data => mem_write_data,
-        mem_read_data => mem_read_data,
-        reg_write_enable => reg_write_enable,
-        reg_write_data_sel => reg_write_data_sel,
+
         src_a_sel => src_a_sel,
         src_b_sel => src_b_sel,
-        pc_sel_signal => pc_sel_signal,
-        branch_cond_sel => branch_cond_sel,
+        alu_con => alu_con,
         result_sel => result_sel,
-        alu_control => alu_control
+        reg_w_en => reg_w_en,
+        reg_w_sel => reg_w_sel,
+        pc_sel => pc_sel,
+        mem_r_data => mem_r_data,
+
+        alu_zero => alu_zero,
+        alu_result_0 => alu_result_0,
+        mem_addr => mem_addr,
+        mem_w_data => mem_w_data
     );
 
 end architecture;

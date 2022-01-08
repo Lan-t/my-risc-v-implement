@@ -11,27 +11,27 @@ entity ALU is
         width: integer := XLEN
     );
     port (
-        alu_control: in std_logic_vector(3 downto 0);
+        controle: in std_logic_vector(3 downto 0);
         a, b: in std_logic_vector(width-1 downto 0);
         result: buffer std_logic_vector(width-1 downto 0);
         zero: out std_logic
     );
 end ALU;
 
--- +-------------+----------+
--- | alu_control | function |
--- +-------------+----------+
--- |    0000     |     +    |
--- |    1000     |     -    |
--- |    -001     |    <<    |
--- |    -010     | set less than |
--- |    -011     | set less than unsigned |
--- |    -100     |    xor   |
--- |    0101     |    >>    |
--- |    1101     |    >>>   |
--- |    -110     |    or    |
--- |    -111     |    and   |
--- +-------------+----------+
+-- +----------+----------+
+-- | controle | function |
+-- +----------+----------+
+-- |   0000   |     +    |
+-- |   1000   |     -    |
+-- |   -001   |    <<    |
+-- |   -010   | set less than |
+-- |   -011   | set less than unsigned |
+-- |   -100   |    xor   |
+-- |   0101   |    >>    |
+-- |   1101   |    >>>   |
+-- |   -110   |    or    |
+-- |   -111   |    and   |
+-- +----------+----------+
 
 architecture rtl of ALU is
     component ALU_SLL is
@@ -74,7 +74,7 @@ begin
     process (all)
         variable minus_tmp: std_logic_vector(width-1 downto 0) := (others => '0');
     begin
-        case? alu_control is
+        case? controle is
             when "0000" =>
                 result <= a + b;
             when "1000" =>
@@ -146,7 +146,6 @@ begin
         variable shamt: integer;
     begin
         shamt := conv_integer(unsigned(b(4 downto 0)));
-        report integer'image(shamt);
         if shamt /= 0 then
             q <= a(31-shamt downto 0) & (shamt-1 downto 0 => '0');
         else
